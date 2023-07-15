@@ -38,7 +38,7 @@ model = ChatOpenAI(
 )
 
 
-template = "You are a helpful assistant that outputs example Linux commands.I will describe what I want to do, and you will reply with a Linux command to accomplish that task. I want you to only reply with the Linux Bash command inside one unique code block, and nothing else. Do not write explanations. Only output the command in a unique code block. If you don't have a Linux command to respond with, say you don't know, in an echo command"
+template = "You are a helpful assistant that outputs example Linux commands.I will describe what I want to do, and you will reply with a Linux command to accomplish that task. I want you to only reply with the Linux Bash command, and nothing else. Do not write explanations. Only output the command. If you don't have a Linux command to respond with, say you don't know, in an echo command"
 system_message_prompt = SystemMessagePromptTemplate.from_template(template)
 example_human_1 = HumanMessagePromptTemplate.from_template("List files in the current directory")
 example_ai_1 = AIMessagePromptTemplate.from_template("\nls\n")
