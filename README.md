@@ -1,5 +1,5 @@
 
-A very basic CLI helper. Describe a bash command and it outputs sample line(s).  
+A basic CLI helper. Describe a bash command and it outputs sample line(s).  
 
 ![example](example.gif)
 
@@ -71,3 +71,12 @@ nc -zv example.com 443
 
 
 ```
+
+## Implementation notes
+
+This was made using [langchain](https://python.langchain.com/docs/get_started/introduction.html), a library that helps make calls to large language models (LLMs) and process its output. 
+
+In this case I did a 'few shot', which is a way of showing the LLM a few examples of questions and the kind of answers to generate. 
+
+I chose the `gpt-3.5-turbo` model which is the cheapest on OpenAI currently.  
+
