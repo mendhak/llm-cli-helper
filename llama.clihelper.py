@@ -60,7 +60,7 @@ input_request="Show my current directory"
 if len(sys.argv) > 1:
     input_request = " ".join(sys.argv[1:])
 
-chain_memory=ConversationBufferWindowMemory(k=5, human_prefix="Human", ai_prefix="Assistant", memory_key="history")
+chain_memory=ConversationBufferWindowMemory(k=5, human_prefix="\nHuman", ai_prefix="\nAssistant", memory_key="history")
 resuming_conversation = False
 
 if os.path.isfile('history.clihelper.pickle'):
@@ -115,9 +115,9 @@ example_prompt = PromptTemplate(
 )
 
 # now break our previous prompt into a prefix and suffix, the prefix is our instructions
-prefix = """System: You are a helpful assistant that outputs example Linux commands. I will describe what I want to do, and you will reply with a Linux command inside a unique code block to accomplish that task. 
+prefix = """System: You are a helpful assistant that outputs example Linux commands. I will describe what I want to do, and you will reply with a Linux command inside a unique code block on a new line to accomplish that task. 
 I want you to only reply with the Linux Bash command inside a unique code block, and nothing else. 
-Do not write explanations. Only output the command inside a unique code block. 
+Do not write explanations or comments. Only output the command inside a unique code block. 
 If you don't have a Linux command to respond with, say you don't know, in an echo command. Here are some examples: 
 """
 # and the suffix our user input and output indicator
@@ -126,8 +126,7 @@ suffix = """
 
 Human: {query}
 
-Assistant:\n
-
+Assistant:
 """
 
 # now create the few shot prompt template
