@@ -48,23 +48,19 @@ from langchain.memory import ConversationBufferWindowMemory
 import os
 import sys
 
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
+from langchain.prompts.chat import PromptTemplate
+from langchain import FewShotPromptTemplate
 
 is_debug_mode = False
 
 
-input_request="Show my current path"
+input_request="Show my current directory"
 
 # Concatenate arguments together in a string
 if len(sys.argv) > 1:
     input_request = " ".join(sys.argv[1:])
 
-chain_memory=ConversationBufferWindowMemory(k=2)
+chain_memory=ConversationBufferWindowMemory(k=5, human_prefix="Human", ai_prefix="Assistant", memory_key="history")
 resuming_conversation = False
 
 if os.path.isfile('history.clihelper.pickle'):
@@ -76,36 +72,78 @@ n_gpu_layers = 35  # Change this value based on your model and your GPU VRAM poo
 n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
 
 # Make sure the model path is correct for your system!
-with suppress_stdout_stderr(suppress=True):
+with suppress_stdout_stderr(suppress=not is_debug_mode):
     model = LlamaCpp(
         model_path="models/7B/ggml-model-q4_0.bin",
         n_gpu_layers=n_gpu_layers,
         n_batch=n_batch,
         verbose=is_debug_mode,
+        stop=["Human:", "\n\n"], 
     )
 
+# create our examples
+examples = [
+    {
+        "query": "List files in the current directory",
+        "answer": "\n```\nls\n```"
+    }, 
+    {
+        "query": "Push my git branch up!",
+        "answer": "\n```\ngit push origin <branchname>\n```"
+    },
+    {
+        "query": "What is your name?",
+        "answer": "\n```\necho Sorry, I don't know a bash command for that.\n```"
+    },
+    {
+        "query": "What OS am I using?",
+        "answer": "\n```\ncat /etc/issue\n```"
+    }
+]
 
-template = "You are a helpful assistant that outputs example Linux commands. I will describe what I want to do, and you will reply with a Linux command to accomplish that task. I want you to only reply with the Linux Bash command, and nothing else. Do not write explanations. Only output the command. If you don't have a Linux command to respond with, say you don't know, in an echo command"
-system_message_prompt = SystemMessagePromptTemplate.from_template(template)
-example_human_1 = HumanMessagePromptTemplate.from_template("List files in the current directory")
-example_ai_1 = AIMessagePromptTemplate.from_template("\nls\n")
-example_human_2 = HumanMessagePromptTemplate.from_template("Push my git branch up")
-example_ai_2 = AIMessagePromptTemplate.from_template("\ngit push origin <branchname>\n")
-example_human_3 = HumanMessagePromptTemplate.from_template("What is your name?")
-example_ai_3 = AIMessagePromptTemplate.from_template("\necho Sorry, I don't know a bash command for that.\n")
-human_template = "{history}\n{text}"
-human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+# create a example template
+example_template = """Human: {query}
 
+Assistant: 
+{answer}
 
-chat_prompt = ChatPromptTemplate.from_messages(
-    [system_message_prompt, example_human_1, example_ai_1, example_human_2, example_ai_2, example_human_3, example_ai_3, human_message_prompt]
+"""
+
+example_prompt = PromptTemplate(
+    input_variables=["query", "answer"],
+    template=example_template
 )
 
+# now break our previous prompt into a prefix and suffix, the prefix is our instructions
+prefix = """System: You are a helpful assistant that outputs example Linux commands. I will describe what I want to do, and you will reply with a Linux command inside a unique code block to accomplish that task. 
+I want you to only reply with the Linux Bash command inside a unique code block, and nothing else. 
+Do not write explanations. Only output the command inside a unique code block. 
+If you don't have a Linux command to respond with, say you don't know, in an echo command. Here are some examples: 
+"""
+# and the suffix our user input and output indicator
+suffix = """
+{history}
 
+Human: {query}
 
-chain = LLMChain(llm=model, prompt=chat_prompt, memory=chain_memory, verbose=is_debug_mode)
+Assistant:\n
 
-print(chain.run(input_request))
+"""
+
+# now create the few shot prompt template
+few_shot_prompt_template = FewShotPromptTemplate(
+    examples=examples,
+    example_prompt=example_prompt,
+    prefix=prefix,
+    suffix=suffix,
+    input_variables=["history", "query"],
+    example_separator="\n"
+)
+
+chain = LLMChain(llm=model, prompt=few_shot_prompt_template, memory=chain_memory, verbose=is_debug_mode)
+
+response = chain.run(input_request)
+print(response)
 
 
 with open('history.clihelper.pickle', 'wb') as handle:
