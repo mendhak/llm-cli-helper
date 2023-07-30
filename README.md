@@ -101,12 +101,27 @@ Next install the cmake and Python dependencies, and build one specific package w
 
 ### Get some models
 
-Because Llama is open, there are many Llama models you can choose from. Llama.cpp requires models to be in the GGML format. 
+Because Llama is open, there are many Llama models you can choose from. Llama.cpp requires models to be in the GGML format. Here are some I tested with: 
 
-[Llama-2-7B-Chat-GGML](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML) `llama-2-7b-chat.ggmlv3.q4_0.bin`   
-[TheBloke/StableBeluga-7B-GGML](https://huggingface.co/TheBloke/StableBeluga-7B-GGML) `stablebeluga-7b.ggmlv3.q4_0.bin`  
+[TheBloke/Llama-2-7B-Chat-GGML](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML) - `llama-2-7b-chat.ggmlv3.q4_0.bin`   
+[TheBloke/StableBeluga-7B-GGML](https://huggingface.co/TheBloke/StableBeluga-7B-GGML) -  `stablebeluga-7b.ggmlv3.q4_0.bin`  
 
- 
+ Download these then set the path to the model in the .env file. Example: 
+
+     LLAMA_MODEL_PATH="./models/7B/stablebeluga-7b.ggmlv3.q4_0.bin"
+
+### Create an alias
+
+The application is best used as an alias called `?`.  Add it to ~/.bashrc like so:
+
+```bash
+    # add alias
+    echo alias ?="\"$(pwd)/.venv/bin/python3 $(realpath llama.clihelper.py)\"" >> ~/.bashrc
+    # reload bash
+    exec bash
+```
+
+Now start using `?`
 
 ## Implementation notes
 
