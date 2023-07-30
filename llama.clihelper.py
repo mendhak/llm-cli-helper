@@ -1,4 +1,5 @@
 import pickle
+from dotenv import load_dotenv
 from langchain.llms import LlamaCpp
 from langchain import LLMChain
 from langchain.memory import ConversationBufferWindowMemory
@@ -9,7 +10,8 @@ from suppress_llamacpp_stderr import suppress_stdout_stderr
 from langchain.prompts.chat import PromptTemplate
 from langchain import FewShotPromptTemplate
 
-is_debug_mode = False
+load_dotenv()
+is_debug_mode = os.environ.get("DEBUG_MODE", False) == "True"
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 history_file_path = os.path.join(script_dir, 'history.llama.clihelper.pickle')
