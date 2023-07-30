@@ -1,36 +1,9 @@
 
-A basic CLI helper. Describe a bash command and it outputs sample line(s).  
+A basic CLI lookup tool. Describe a bash command and it outputs sample line(s) by quering LLMs. It can talk to OpenAI (GPT 3.5) or Llama.cpp models.  
 
 ![example](example.gif)
 
-## Set up
-
-### Install the dependencies
-
-Set up dependencies
-
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
-
-Create a file called `.env` and place your OpenAI API key in there. 
-
-```
-OPENAI_API_KEY="......................................."
-```
-
-### Create an alias
-
-Best used as an alias called `?`.  Add it to ~/.bashrc like so:
-
-```bash
-    # add alias
-    echo alias ?="\"$(pwd)/.venv/bin/python3 $(realpath openai.clihelper.py)\"" >> ~/.bashrc
-    # reload bash
-    exec bash
-```
-
-## Use it
+## Usage
 
 Try a few commands
 
@@ -68,9 +41,72 @@ echo | telnet example.com 443
 $ ? using nc
 
 nc -zv example.com 443
+```
 
+## Set up
+
+Set up dependencies
+
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+
+Make a copy of the ``.env.sample`` file and call it `.env`
+
+## OpenAI setup (simple)
+
+Get an API key from your [OpenAI account](https://platform.openai.com/account/api-keys). Place it in the `.env` file
 
 ```
+OPENAI_API_KEY="......................................."
+```
+
+There is a small cost associated with OpenAI calls, so it's a good idea to [set monthly limits](https://platform.openai.com/account/billing/limits) on usage.
+
+
+### Create an alias
+
+The application is best used as an alias called `?`.  Add it to ~/.bashrc like so:
+
+```bash
+    # add alias
+    echo alias ?="\"$(pwd)/.venv/bin/python3 $(realpath openai.clihelper.py)\"" >> ~/.bashrc
+    # reload bash
+    exec bash
+```
+
+Now start using `?`
+
+## Llama.cpp models (uses GPU)
+
+Llama.cpp is a fast way of running local LLMs on your own computer. It is very fast with GPUs which will be my focus. It is free to use.
+
+### Install dependencies
+
+First, ensure that [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_local) is installed. 
+After installing Cuda, add it to your path and reload bash:  
+
+    echo 'export PATH="/usr/local/cuda/bin:$PATH"' >> ~/.bashrc
+    exec bash
+    # test that it worked: 
+    nvcc --version
+
+Next install the cmake and Python dependencies, and build one specific package with GPU support. 
+
+    sudo apt install make cmake
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python --force --no-cache
+
+### Get some models
+
+Because Llama is open, there are many Llama models you can choose from. Llama.cpp requires models to be in the GGML format. 
+
+[Llama-2-7B-Chat-GGML](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGML) `llama-2-7b-chat.ggmlv3.q4_0.bin`   
+[TheBloke/StableBeluga-7B-GGML](https://huggingface.co/TheBloke/StableBeluga-7B-GGML) `stablebeluga-7b.ggmlv3.q4_0.bin`  
+
+ 
 
 ## Implementation notes
 
