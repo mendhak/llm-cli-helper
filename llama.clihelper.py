@@ -12,9 +12,11 @@ from langchain import FewShotPromptTemplate
 
 load_dotenv()
 is_debug_mode = os.environ.get("DEBUG_MODE", False) == "True"
+llama_model_path = os.environ.get("LLAMA_MODEL_PATH", "models/7B/ggml-model-q4_0.bin")
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 history_file_path = os.path.join(script_dir, 'history.llama.clihelper.pickle')
+
 
 input_request="Show my current directory"
 
@@ -36,7 +38,7 @@ n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in y
 # Make sure the model path is correct for your system!
 with suppress_stdout_stderr(suppress=not is_debug_mode):
     model = LlamaCpp(
-        model_path="models/7B/ggml-model-q4_0.bin",
+        model_path=llama_model_path,
         n_gpu_layers=n_gpu_layers,
         n_batch=n_batch,
         verbose=is_debug_mode,
