@@ -53,6 +53,7 @@ from langchain import FewShotPromptTemplate
 
 is_debug_mode = False
 
+pickle_file_name = 'history.llama.clihelper.pickle'
 
 input_request="Show my current directory"
 
@@ -63,8 +64,8 @@ if len(sys.argv) > 1:
 chain_memory=ConversationBufferWindowMemory(k=5, human_prefix="\nHuman", ai_prefix="\nAssistant", memory_key="history")
 resuming_conversation = False
 
-if os.path.isfile('history.clihelper.pickle'):
-    with open('history.clihelper.pickle', 'rb') as handle:
+if os.path.isfile(pickle_file_name):
+    with open(pickle_file_name, 'rb') as handle:
         chain_memory = pickle.load(handle)
     resuming_conversation = True
 
@@ -145,5 +146,5 @@ response = chain.run(input_request)
 print(response)
 
 
-with open('history.clihelper.pickle', 'wb') as handle:
+with open(pickle_file_name, 'wb') as handle:
     pickle.dump(chain.memory, handle, protocol=pickle.HIGHEST_PROTOCOL)

@@ -25,7 +25,7 @@ Best used as an alias called `?`.  Add it to ~/.bashrc like so:
 
 ```bash
     # add alias
-    echo alias ?="\"$(pwd)/.venv/bin/python3 $(realpath clihelper.py)\"" >> ~/.bashrc
+    echo alias ?="\"$(pwd)/.venv/bin/python3 $(realpath openai.clihelper.py)\"" >> ~/.bashrc
     # reload bash
     exec bash
 ```
