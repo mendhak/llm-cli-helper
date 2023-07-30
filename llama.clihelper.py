@@ -25,12 +25,10 @@ if len(sys.argv) > 1:
     input_request = " ".join(sys.argv[1:])
 
 chain_memory=ConversationBufferWindowMemory(k=5, human_prefix="\nHuman", ai_prefix="\nAssistant", memory_key="history")
-resuming_conversation = False
 
 if os.path.isfile(history_file_path):
     with open(history_file_path, 'rb') as handle:
         chain_memory = pickle.load(handle)
-    resuming_conversation = True
 
 n_gpu_layers = 35  # Change this value based on your model and your GPU VRAM pool.
 n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.

@@ -26,12 +26,10 @@ if len(sys.argv) > 1:
     input_request = " ".join(sys.argv[1:])
 
 chain_memory=ConversationBufferWindowMemory(k=2)
-resuming_conversation = False
 
 if os.path.isfile(history_file_path):
     with open(history_file_path, 'rb') as handle:
         chain_memory = pickle.load(handle)
-    resuming_conversation = True
 
 model = ChatOpenAI(
     model_name="gpt-3.5-turbo",
