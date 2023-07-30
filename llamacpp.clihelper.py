@@ -14,8 +14,9 @@ load_dotenv()
 is_debug_mode = os.environ.get("DEBUG_MODE", False) == "True"
 llama_model_path = os.environ.get("LLAMA_MODEL_PATH", "models/7B/ggml-model-q4_0.bin")
 
+filename = os.path.splitext(os.path.basename(__file__))[0]
 script_dir = os.path.dirname(os.path.realpath(__file__))
-history_file_path = os.path.join(script_dir, 'history.llama.clihelper.pickle')
+history_file_path = os.path.join(script_dir, f'{filename}.pickle')
 
 
 input_request="Show my current directory"

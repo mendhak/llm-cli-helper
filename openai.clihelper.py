@@ -16,8 +16,9 @@ from langchain.prompts.chat import (
 load_dotenv()
 is_debug_mode = False
 
+filename = os.path.splitext(os.path.basename(__file__))[0]
 script_dir = os.path.dirname(os.path.realpath(__file__))
-history_file_path = os.path.join(script_dir, 'history.openai.clihelper.pickle')
+history_file_path = os.path.join(script_dir, f'{filename}.pickle')
 
 input_request="Show my current path"
 

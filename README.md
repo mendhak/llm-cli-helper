@@ -116,7 +116,7 @@ The application is best used as an alias called `?`.  Add it to ~/.bashrc like s
 
 ```bash
     # add alias
-    echo alias ?="\"$(pwd)/.venv/bin/python3 $(realpath llama.clihelper.py)\"" >> ~/.bashrc
+    echo alias ?="\"$(pwd)/.venv/bin/python3 $(realpath llamacpp.clihelper.py)\"" >> ~/.bashrc
     # reload bash
     exec bash
 ```
