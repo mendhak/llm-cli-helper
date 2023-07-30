@@ -24,6 +24,12 @@ input_request="Show my current directory"
 if len(sys.argv) > 1:
     input_request = " ".join(sys.argv[1:])
 
+if input_request == "clear":
+    # delete the pickle file
+    if os.path.isfile(history_file_path):
+        os.remove(history_file_path)
+    sys.exit(0)    
+
 chain_memory=ConversationBufferWindowMemory(k=5, human_prefix="\nHuman", ai_prefix="\nAssistant", memory_key="history")
 
 if os.path.isfile(history_file_path):
