@@ -16,7 +16,8 @@ from langchain.prompts.chat import (
 load_dotenv()
 is_debug_mode = False
 
-pickle_file_name = 'history.openai.clihelper.pickle'
+script_dir = os.path.dirname(os.path.realpath(__file__))
+history_file_path = os.path.join(script_dir, 'history.openai.clihelper.pickle')
 
 input_request="Show my current path"
 
@@ -27,8 +28,8 @@ if len(sys.argv) > 1:
 chain_memory=ConversationBufferWindowMemory(k=2)
 resuming_conversation = False
 
-if os.path.isfile(pickle_file_name):
-    with open(pickle_file_name, 'rb') as handle:
+if os.path.isfile(history_file_path):
+    with open(history_file_path, 'rb') as handle:
         chain_memory = pickle.load(handle)
     resuming_conversation = True
 
@@ -61,5 +62,5 @@ chain = LLMChain(llm=model, prompt=chat_prompt, memory=chain_memory, verbose=is_
 print(chain.run(input_request))
 print()
 
-with open(pickle_file_name, 'wb') as handle:
+with open(history_file_path, 'wb') as handle:
     pickle.dump(chain.memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
