@@ -13,6 +13,10 @@ from langchain import FewShotPromptTemplate
 load_dotenv()
 is_debug_mode = os.environ.get("DEBUG_MODE", False) == "True"
 llama_model_path = os.environ.get("LLAMA_MODEL_PATH", "models/7B/ggml-model-q4_0.bin")
+# Convert llama model path to absolute path if it is a relative path
+if not os.path.isabs(llama_model_path):
+    llama_model_path = os.path.join(os.path.dirname(__file__), llama_model_path)
+    
 
 filename = os.path.splitext(os.path.basename(__file__))[0]
 script_dir = os.path.dirname(os.path.realpath(__file__))
