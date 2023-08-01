@@ -60,8 +60,6 @@ chain = LLMChain(llm=model, prompt=chat_prompt, memory=chain_memory, verbose=is_
 # get a chat completion from the formatted messages
 print(chain.run(input_request))
 
-print(chain.memory.chat_memory.messages)
-
 # Unfortunately langchain's conversation buffer window stores _all_ messages in memory even if it only serves a few `k`. Have to manually trim it. 
 chain.memory.chat_memory.messages = chain.memory.chat_memory.messages[-4:]
 
