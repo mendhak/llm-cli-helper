@@ -35,11 +35,15 @@ if input_request == "clear":
         os.remove(history_file_path)
     sys.exit(0)    
 
-chain_memory=ConversationBufferWindowMemory(k=5, human_prefix="\nHuman", ai_prefix="\nAssistant", memory_key="history")
+
 
 if os.path.isfile(history_file_path):
     with open(history_file_path, 'rb') as handle:
         chain_memory = pickle.load(handle)
+else:
+    chain_memory=ConversationBufferWindowMemory(k=3, human_prefix="\nHuman", ai_prefix="\nAssistant", memory_key="history")
+
+
 
 n_gpu_layers = 35  # Change this value based on your model and your GPU VRAM pool.
 n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
@@ -117,6 +121,9 @@ chain = LLMChain(llm=model, prompt=few_shot_prompt_template, memory=chain_memory
 response = chain.run(input_request)
 print(response)
 
+
+# Unfortunately langchain's conversation buffer window stores _all_ messages in memory even if it only serves a few `k`. Have to manually trim it. 
+chain.memory.chat_memory.messages = chain.memory.chat_memory.messages[-6:]
 
 with open(history_file_path, 'wb') as handle:
     pickle.dump(chain.memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
